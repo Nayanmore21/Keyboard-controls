@@ -39,13 +39,13 @@ const KeyboardControl = () => {
     const parentNameRef = useRef(null);
     const parentEmailRef = useRef(null);
     const submitButtonRef = useRef(null);
+    const checkboxRef = useRef(null);
 
     // Handle keyboard navigation
     const handleKeyDown = (e, nextRef, isSpecialControl = false) => {
         if (e.key === 'Enter' || (e.key === 'Tab' && !e.shiftKey)) {
             e.preventDefault();
             if (isSpecialControl) {
-                // For special controls, we need to handle the focus manually
                 setTimeout(() => {
                     nextRef.current?.focus();
                 }, 0);
@@ -62,7 +62,7 @@ const KeyboardControl = () => {
             ...prev,
             [field]: value
         }));
-        // Clear error when field is modified
+        
         if (errors[field]) {
             setErrors(prev => ({
                 ...prev,
@@ -75,9 +75,9 @@ const KeyboardControl = () => {
     const handleDatePickerKeyDown = (e) => {
         if (e.key === 'Enter' || (e.key === 'Tab' && !e.shiftKey)) {
             e.preventDefault();
-            // Close the date picker if it's open
+           
             e.target.blur();
-            // Move to next field
+            
             genderRef.current?.focus();
         }
     };
@@ -140,11 +140,11 @@ const KeyboardControl = () => {
     const handleSubmit = (event) => {
         event.preventDefault();
         if (validateForm()) {
-            // Handle successful form submission
+            
             console.log('Form submitted:', formData);
             setSnackbarMessage('Form submitted successfully!');
             setOpenSnackbar(true);
-            // Reset form
+            
             setFormData({
                 firstName: '',
                 lastName: '',
@@ -173,7 +173,7 @@ const KeyboardControl = () => {
 
                 <form onSubmit={handleSubmit}>
                     <Grid container spacing={3}>
-                        {/* Personal Information */}
+                       
                         <Grid item xs={12} md={6}>
                             <TextField
                                 fullWidth
@@ -223,17 +223,16 @@ const KeyboardControl = () => {
                                     label="Date of Birth"
                                     value={formData.dateOfBirth}
                                     onChange={handleDateChange}
-                                    renderInput={(params) => (
-                                        <TextField
-                                            {...params}
-                                            fullWidth
-                                            required
-                                            error={!!errors.dateOfBirth}
-                                            helperText={errors.dateOfBirth}
-                                            inputRef={dateOfBirthRef}
-                                            onKeyDown={handleDatePickerKeyDown}
-                                        />
-                                    )}
+                                    slotProps={{
+                                        textField: {
+                                            fullWidth: true,
+                                            required: true,
+                                            error: !!errors.dateOfBirth,
+                                            helperText: errors.dateOfBirth,
+                                            inputRef: dateOfBirthRef,
+                                            onKeyDown: handleDatePickerKeyDown
+                                        }
+                                    }}
                                 />
                             </LocalizationProvider>
                         </Grid>
@@ -312,11 +311,11 @@ const KeyboardControl = () => {
                             />
                         </Grid>
 
-                        {/* Parent Information */}
+                     
                         <Grid item xs={12} md={6}>
                             <TextField
                                 fullWidth
-                                label="Parent/Guardian Name"
+                                label="Parent Name"
                                 value={formData.parentName}
                                 onChange={handleChange('parentName')}
                                 inputRef={parentNameRef}
@@ -327,12 +326,12 @@ const KeyboardControl = () => {
                         <Grid item xs={12} md={6}>
                             <TextField
                                 fullWidth
-                                label="Parent/Guardian Email"
+                                label="Parent Email"
                                 type="email"
                                 value={formData.parentEmail}
                                 onChange={handleChange('parentEmail')}
                                 inputRef={parentEmailRef}
-                                onKeyDown={(e) => handleKeyDown(e, submitButtonRef)}
+                                onKeyDown={(e) => handleKeyDown(e, checkboxRef)}
                             />
                         </Grid>
 
@@ -342,6 +341,7 @@ const KeyboardControl = () => {
                                     <Checkbox
                                         checked={formData.hasSchoolBus}
                                         onChange={handleChange('hasSchoolBus')}
+                                        inputRef={checkboxRef}
                                         onKeyDown={(e) => handleKeyDown(e, submitButtonRef, true)}
                                     />
                                 }
